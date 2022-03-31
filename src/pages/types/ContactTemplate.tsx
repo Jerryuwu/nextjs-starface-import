@@ -7,3 +7,4 @@ export type ContactField = {
   displayName: string
   selected: false | number
 }
+export default ContactTemplate

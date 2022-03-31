@@ -14,3 +14,4 @@ export type CsvColumn = {
   rows: string[]
   header: CsvHeader
 }
+export default FileContent

@@ -6,3 +6,4 @@ export type SelectablePropertyType = {
   property: string
   selected: number | false
 }
+export default SelectedPropertiesType

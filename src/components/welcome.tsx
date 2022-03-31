@@ -1,31 +1,20 @@
 import { useForm } from 'react-hook-form'
-import { useRouter } from 'next/router'
+import { Dispatch, SetStateAction } from 'react'
 import {
-  ChangeEventHandler,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useState,
-} from 'react'
-import {
-  CsvBodyRow,
-  CsvHeaderType,
-  FileContentType,
+  CsvColumn,
+  CsvHeader,
+  FileContent,
 } from '@/pages/types/FileContentType'
 import Link from 'next/link'
 import Head from 'next/head'
 
 type WelcomeProps = {
-  setFileContent: Dispatch<SetStateAction<FileContentType | null>>
+  setFileContent: Dispatch<SetStateAction<FileContent | null>>
 }
 
 function Welcome({ setFileContent }: WelcomeProps) {
-  const { handleSubmit } = useForm()
-  const router = useRouter()
-  const [selectedFile, setSelectedFile] = useState()
   let fileReader: FileReader
-  let headers
-  let fileContent: FileContentType
+  let fileContent: FileContent
 
   // @ts-ignore
   function handleChosenFile(file) {
@@ -44,29 +33,32 @@ function Welcome({ setFileContent }: WelcomeProps) {
   //turn csv into FileContentType object and save it to session storage
   function csvJSON(csv) {
     let lines = csv.split('\r\n')
-    let i = 0
-    let headers: Array<CsvHeaderType> = []
-    lines[0].split(';').forEach((header: string) => {
-      let headerProp: CsvHeaderType = {
-        id: i,
+    let headers: Array<CsvHeader> = []
+    lines[0].split(';').forEach((header: string, index: number) => {
+      let headerProp: CsvHeader = {
+        id: index,
         property: header,
-        selected: false,
+        selectedProperty: false,
       }
       headers.push(headerProp)
     })
-
-    //headers = lines[0].split(';')
-    let rows: Array<CsvBodyRow> = []
-
-    for (let i = 1; i < lines.length - 1; i++) {
-      let row: CsvBodyRow = {
-        columns: lines[i].split(';'),
+    let columns: Array<CsvColumn> = []
+    for (let i = 0; i < lines[0].split(';').length; i++) {
+      let column: CsvColumn = {
+        id: i,
+        rows: [],
+        header: headers[i],
       }
-      rows.push(row)
+      columns.push(column)
+    }
+    for (let i = 0; i < lines.length - 1; i++) {
+      let entries = lines[i].split(';')
+      entries.forEach((col: string, index: number) => {
+        columns[index].rows[i - 1] = col
+      })
     }
     fileContent = {
-      header: headers,
-      body: rows,
+      columns: columns,
     }
     setFileContent(fileContent)
   }
@@ -87,26 +79,27 @@ function Welcome({ setFileContent }: WelcomeProps) {
           Willkommen im Starface Importtool von Nexave!
         </p>
         <p className="info-text mb-4">
-          Dieses Tool ermöglicht Ihnen, jegliche Kundendaten aus anderen
-          Programmen in die Starface-Anlage zu importieren. <br />
-          Für den Import benötigt wird eine CSV-Datei. Hilfe zur Umwandlung
-          finden Sie unten. Nachdem Sie Ihre Datei in unser System hochgeladen
-          haben, kommen Sie zu einer Auswahl an Eigenschaften. In diesem Fenster
-          geben Sie an, welche Eigenschaften später in die Starface-Anlage
-          importiert werden sollen. <br />
-          Im nächsten Fenster ordenen Sie den ausgewählten Eigenschaften den
-          Eigenschaften aus der Tabelle zu. Näheres finden Sie auf der
-          entsprechenden Seite.
+          Dieses Tool ermöglicht Ihnen, Kundendaten aus anderen Programmen in
+          die Starface-Anlage zu importieren. <br />
+          Für den Import werden zwei CSV-Dateien benötigt:
+          <br />
+          1. Ihre <strong>Kundendaten</strong>, formatiert als CSV <br />
+          2. Die <strong> Importdatei aus Starface</strong>, ebenfalls als CSV{' '}
+          <br />
+          Zunächst beginnen Sie damit, die Kundendaten hochzuladen. Sie werden
+          dann automatisch weitergeleitet, <br /> um die Importdatei aus
+          Starface hochzuladen. Genaueres dazu ist dort zu finden.
+        </p>
+        <p className="mt-2 text-3xl font-bold ">
+          Laden Sie hier Ihre Kundendaten hoch:
         </p>
 
-        <div className="mt-6 flex items-center justify-center">
+        <div className="mt-2 flex items-center justify-center">
           <input
             accept=".csv"
             name="file"
             type="file"
             onChange={(e) => {
-              // @ts-ignore
-              setSelectedFile(e.target.files[0])
               // @ts-ignore
               handleChosenFile(e.target.files[0])
             }}

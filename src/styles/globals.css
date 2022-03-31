@@ -6,20 +6,39 @@
     .file-input {
         @apply block w-96 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none;
     }
+
     .orange-button {
-        @apply bg-primary py-2 p-4 text-white rounded rounded-lg disabled:bg-gray-500 text-xl
+        @apply bg-primary py-2 p-4 text-white rounded rounded-lg disabled:bg-gray-500 text-xl hover:scale-105 transition-transform duration-75
     }
+
     .info-text {
         @apply w-full text-base md:w-3/4 md:text-2xl
     }
+
     .header-text {
         @apply text-2xl font-bold md:text-5xl
     }
-
 }
 
 #__next {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+
+table {
+    display: table
+}
+
+tbody tr {
+    display: table-cell
+}
+
+tbody tr td {
+    display: block
+}
+@font-face {
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
 }

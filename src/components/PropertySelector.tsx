@@ -1,4 +1,4 @@
-import { ReactChild, ReactFragment, ReactPortal, useState } from 'react'
+import { useState } from 'react'
 
 function PropertySelector(props: {
   option: string
@@ -7,7 +7,6 @@ function PropertySelector(props: {
   sendSelected
 }) {
   const [isSelected, setSelected] = useState(false)
-  const [bgColour, setBgColour] = useState('bg-gray-100 text-black')
   return (
     <div>
       <button

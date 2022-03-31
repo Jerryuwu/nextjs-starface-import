@@ -4,7 +4,5 @@ export type SelectedPropertiesType = {
 export type SelectablePropertyType = {
   id: number
   property: string
-  selected: boolean
+  selected: number | false
 }
-
-export type AssignedProperty = {}

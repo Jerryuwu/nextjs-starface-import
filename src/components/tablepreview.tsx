@@ -1,15 +1,12 @@
-import {
-  CsvBodyRow,
-  CsvHeaderType,
-  FileContentType,
-} from '@/pages/types/FileContentType'
+import { FileContent } from '@/pages/types/FileContentType'
 import { SelectedPropertiesType } from '@/pages/types/SelectedPropertiesType'
+import { Dispatch, SetStateAction, useEffect } from 'react'
+import { ContactTemplate } from '@/pages/types/ContactTemplate'
 
 type TablePreviewProps = {
-  fileHeaders: CsvHeaderType[]
-  fileContent: FileContentType
-  selectedProperties: SelectedPropertiesType
-  deleteFileHeaders(): void
+  fileContent: FileContent
+  setPropsSet: Dispatch<SetStateAction<boolean>>
+  contactTemplate: ContactTemplate
 }
 type TableContent = {
   columns: Column[]
@@ -19,41 +16,55 @@ type Column = {
 }
 
 const TablePreview = ({
-  fileHeaders,
   fileContent,
-  selectedProperties,
-  deleteFileHeaders,
+  setPropsSet,
+  contactTemplate,
 }: TablePreviewProps) => {
-  let content: TableContent = {
-    columns: [],
-  }
-
   function orderFileContent() {
-    fileContent.body.forEach((entry) => {
-      let column: Column = {
-        entries: [],
-      }
-      let i = 0
-      fileHeaders.forEach((header, index) => {
-        if (header.selected === false) return
-        //check if first- and lastname have to be seperated
-        let prop = selectedProperties.properties[header.selected]
-        if (prop.property === 'Name') {
-          let name = entry.columns[index]
-          let names = name.split(' ')
-          column.entries[header.selected] = names[0]
-          column.entries[header.selected + 1] = names[1]
-          i = 1
-        } else column.entries[header.selected + i] = entry.columns[index]
-      })
-      content.columns.push(column)
-    })
+    console.log(fileContent)
   }
+  useEffect(() => {
+    orderFileContent()
+  })
+  function deletePropertyAssignments() {
+    setPropsSet(false)
+  }
+  function downloadCSV(csv: string) {
+    var csvFile
+    var downloadLink
 
-  orderFileContent()
+    csvFile = new Blob([csv], { type: 'text/csv' })
+    downloadLink = document.createElement('a')
+    downloadLink.download = 'starface_kundendaten'
+    downloadLink.href = window.URL.createObjectURL(csvFile)
+    downloadLink.style.display = 'none'
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+  }
+  function csvToFile() {
+    let exportString = ''
+    let newFields = contactTemplate.fields.filter(
+      (field) => field.selected !== false
+    )
+    // @ts-ignore
+    newFields = contactTemplate.fields.sort((a, b) => a.selected - b.selected)
+    newFields.forEach((field) => {
+      if (field.selected === false) return
+      console.log(field.selected)
+      exportString += field.name + ';'
+    })
+    exportString += '\n'
+    for (let i = 0; i < fileContent.columns[0].rows.length; i++) {
+      fileContent.columns.forEach((col, index) => {
+        console.log(col)
+        if (col.header.selectedProperty === undefined) return
+        exportString += col.rows[i] + ';'
+      })
+      exportString += '\n'
+    }
+    downloadCSV(exportString)
 
-  function deleteHeaders() {
-    deleteFileHeaders()
+    console.table(exportString)
   }
 
   return (
@@ -63,36 +74,47 @@ const TablePreview = ({
         Bitte stellen Sie sicher, dass alle Daten in den entsprechenden Spalten
         vorhanden sind.
       </p>
+      <div className="flex gap-6">
+        <button className="orange-button" onClick={csvToFile}>
+          Als CSV herunterladen
+        </button>
+        <button disabled={true} className="orange-button">
+          In Starface importieren
+        </button>
+      </div>
       <div className="mt-1 mb-4">
-        <button className="text-blue-700 underline" onClick={deleteHeaders}>
+        <button
+          className="text-blue-700 underline"
+          onClick={deletePropertyAssignments}
+        >
           zurück zur Zuordnung
         </button>
       </div>
-      <table className="border border-2 border-gray-700">
+      <table className="">
         <thead className="bg-primary text-xl">
           <tr>
-            {selectedProperties.properties.map((prop) => {
-              if (prop.property === 'Name') {
-                return (
-                  <>
-                    <th className="border border-black px-2">Vorname</th>
-                    <th className="border border-black px-2">Nachname</th>
-                  </>
-                )
-              }
+            {fileContent.columns.map((col) => {
+              if (col.header.selectedProperty === false) return
+              if (col.header.selectedProperty === undefined) return
               return (
-                <th className="border border-black px-2">{prop.property}</th>
+                <td className="border border-black px-2 font-bold">
+                  {col.header.selectedProperty.displayName}
+                </td>
               )
             })}
           </tr>
         </thead>
         <tbody>
-          {content.columns.map((col) => {
+          {fileContent.columns.map((col) => {
+            if (col.header.selectedProperty === undefined) return
+            if (col.header.selectedProperty === false) return
             return (
-              <tr className="">
-                {col.entries.map((e) => {
+              <tr className="border border-black">
+                {col.rows.map((row) => {
                   return (
-                    <td className="border border-gray-500 py-1 px-2">{e}</td>
+                    <td className="border-b-[1px] px-2 py-1 text-left">
+                      {row}
+                    </td>
                   )
                 })}
               </tr>

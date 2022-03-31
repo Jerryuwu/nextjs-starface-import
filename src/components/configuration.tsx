@@ -63,6 +63,7 @@ function configuration({
     }
     setSelectedProperties(p)
   }
+
   function deleteFile() {
     deleteFileContent()
   }
@@ -73,13 +74,9 @@ function configuration({
       <p className="info-text mb-4">
         Wählen Sie die Eigenschaften aus, welche Sie in Starface importieren
         möchten. <br />
-        Die Anzahl gewählter Eigenschaften darf der Anzahl der Eigenschaften
-        <br /> in der CSV-Datei nicht überschreiten.
-      </p>
-      <p className="mb-4 text-2xl">
         Ist in Ihrer Tabelle der Vor- und Nachname in einer Spalte, wählen Sie
-        dafür lediglich "Name" aus. <br />
-        Vor- und Nachname werden dann automatisch geteilt.
+        dafür lediglich das Feld "Name" aus. Vor- und Nachname werden dann
+        automatisch getrennt.
       </p>
       <div className="flex w-1/2 flex-wrap items-center justify-center gap-2">
         {selectedProperties.properties.map((property) => (

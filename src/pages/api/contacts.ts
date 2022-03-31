@@ -9,6 +9,7 @@ type RequestBody = {
   loginID: string
   password: string
   contacts: Contact[]
+  lang: string
 }
 
 type GetLoginResponse = {
@@ -38,7 +39,7 @@ async function getAuthToken(
 async function starfaceFetch(
   link: string,
   method: string,
-  body: string
+  body?: string
 ): Promise<Response> {
   return fetch(link, {
     method,
@@ -78,16 +79,23 @@ export default async function handler(
   const authToken = await getAuthToken(loginResponse)
   token = authToken.token
 
-  body.contacts.forEach(async (contact) => {
-    let resp = await starfaceFetch(
-      'http://10.13.37.101/rest/contacts',
-      'POST',
-      JSON.stringify(contact)
-    )
-    console.log('Test')
-    let respjson = await resp.text()
-    console.log(respjson)
-    console.log('Test2')
-  })
-  res.status(200)
+  // body.contacts.forEach(async (contact) => {
+  //   let resp = await starfaceFetch(
+  //     'http://10.13.37.101/rest/contacts',
+  //     'POST',
+  //     JSON.stringify(contact)
+  //   )
+  //   console.log('Test')
+  //   let respjson = await resp.text()
+  //   console.log(respjson)
+  //   console.log('Test2')
+  // })
+
+  let resp = await starfaceFetch(
+    'http://10.13.37.101/rest/contacts/scheme/?lang=de',
+    'get'
+  )
+  let respJson = await resp.json()
+  console.log(respJson)
+  res.status(200).json(respJson)
 }

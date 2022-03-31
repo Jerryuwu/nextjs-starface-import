@@ -1,73 +1,81 @@
 import PropertyTable from '@/components/PropertyTable'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { CsvHeaderType, FileContentType } from '@/pages/types/FileContentType'
 import {
-  SelectablePropertyType,
-  SelectedPropertiesType,
-} from '@/pages/types/SelectedPropertiesType'
+  CsvColumn,
+  CsvHeader,
+  FileContent,
+} from '@/pages/types/FileContentType'
+import { SelectablePropertyType } from '@/pages/types/SelectedPropertiesType'
+import { ContactField, ContactTemplate } from '@/pages/types/ContactTemplate'
 
 type AssignmentProps = {
-  fileContent: FileContentType
-  selectedProperties: SelectedPropertiesType
-  setFileHeaders: Dispatch<SetStateAction<CsvHeaderType[] | null>>
-  deleteSelectedProperties(): void
+  fileContent: FileContent
+  setPropsSet: Dispatch<SetStateAction<boolean>>
+  contactTemplate: ContactTemplate
+  setContactTemplate: Dispatch<SetStateAction<ContactTemplate | null>>
+  setFileContent: Dispatch<SetStateAction<FileContent | null>>
+  deleteContactTemplate(): void
 }
 
 function PropertyAssignment({
   fileContent,
-  selectedProperties,
-  setFileHeaders,
-  deleteSelectedProperties,
+  setPropsSet,
+  contactTemplate,
+  setFileContent,
+  deleteContactTemplate,
 }: AssignmentProps) {
-  const [headers, setHeaders] = useState<CsvHeaderType[]>(fileContent.header)
-  console.log(fileContent.header)
-  /*setHeaders((current) => {
-    current.forEach((value) => {
-      value.selected = false
-    })
-    return [...current]
-  })*/
-  let i = 0
-  selectedProperties.properties.forEach((prop) => {
-    prop.id = i
-    i++
-  })
+  const [columns, setHeaders] = useState<CsvColumn[]>(fileContent.columns)
+  const [fields, setFields] = useState<ContactField[]>(contactTemplate.fields)
 
-  function onSelect(propertyId: number, headerId: number) {
-    setHeaders((current) => {
-      current.forEach((value) => {
-        value.selected = value.selected === propertyId ? false : value.selected
+  function onSelect(selectedId: number, headerId: number) {
+    setFields((current) => {
+      current.forEach((prop) => {
+        prop.selected = prop.selected === headerId ? false : prop.selected
       })
-      current[headerId].selected = propertyId
+      if (current[selectedId] !== undefined)
+        current[selectedId].selected = headerId
       return [...current]
     })
   }
 
-  function deleteProperties() {
-    deleteSelectedProperties()
+  function saveAssignments() {
+    let newFileContent: FileContent = {
+      columns: fileContent.columns,
+    }
+    newFileContent.columns.forEach((col) => {
+      col.header.selectedProperty = contactTemplate.fields.filter(
+        (prop) => prop.selected === col.id
+      )[0]
+    })
+    setFileContent(newFileContent)
+    setPropsSet(true)
   }
 
-  function saveAssignments() {
-    setFileHeaders(headers)
-  }
   return (
     <div className="flex flex-col items-center justify-center text-center text-center">
       <p className="header-text mb-4">Zuordnung der Eigenschaften</p>
       <p className="info-text mb-4">
-        Nun ordnen Sie den eben gewählten Eigenschaften einer Spalte aus Ihrer
-        CSV-Tabelle zu. <br />
-        Die Eigenschaften Ihrer Tabelle befinden sich in den Dropdown-Listen im
-        unteren Teil. Sie können eine Spalte nur einer Eigenschaft zuordnen.
-        Nicht zugewiesene Spalten werden nicht formatiert.
+        Sie müssen nun den Eigenschaften aus der Starface-Datei Ihre Kundendaten
+        zuordnen. <br />
+        Die fett gedruckten Überschriften beschreibt die Daten aus Ihrer
+        Kundendatei. Auswählbar darunter sind die Eigenschaften aus Starface.{' '}
+        <br />
+        Nun geben Sie an, in welche Eigenschaft die Daten aus Ihrer Tabelle
+        geladen werden sollen. <br />
+        <strong>Beispiel:</strong> Sie haben in Ihrer Kundendatei eine Spalte
+        mit dem Namen "Mailadresse" und wollen diese importieren. Sie haben
+        zudem eine Datei aus Starface hochgeladen, worin sich ebenfalls das Feld
+        "E-Mail" befindet. <br />
+        Sie wählen nun in der Box mit der Überschrift "Mailadresse" das Feld
+        "E-Mail" aus.
       </p>
-      <div className="mt-4 flex w-2/3 flex-wrap justify-center gap-2">
-        {selectedProperties.properties.map((prop) => {
+      <div className="mt-4 flex w-2/3 flex-wrap justify-center gap-4">
+        {columns.map((header) => {
           return (
             <PropertyTable
-              key={prop.id}
-              id={prop.id}
-              propertyName={prop.property}
-              headers={headers}
+              key={header.id}
+              fields={fields}
+              header={header.header}
               onSelect={onSelect}
             />
           )
@@ -80,9 +88,9 @@ function PropertyAssignment({
       </div>
       <button
         className="mt-2 text-blue-700 underline"
-        onClick={deleteProperties}
+        onClick={deleteContactTemplate}
       >
-        Eigenschaften ändern
+        Starface-Template ändern
       </button>
     </div>
   )

@@ -1,12 +1,16 @@
-export type FileContentType = {
-  header: CsvHeaderType[]
-  body: CsvBodyRow[]
+import { ContactField } from '@/pages/types/ContactTemplate'
+
+export type FileContent = {
+  columns: CsvColumn[]
 }
-export type CsvHeaderType = {
+
+export type CsvHeader = {
   id: number
   property: string
-  selected: false | number
+  selectedProperty: ContactField | false
 }
-export type CsvBodyRow = {
-  columns: string[]
+export type CsvColumn = {
+  id: number
+  rows: string[]
+  header: CsvHeader
 }

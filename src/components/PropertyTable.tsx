@@ -1,41 +1,41 @@
-import { CsvHeaderType } from '@/pages/types/FileContentType'
+import { CsvHeader } from '@/pages/types/FileContentType'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { func } from 'prop-types'
+import {
+  SelectablePropertyType,
+  SelectedPropertiesType,
+} from '@/pages/types/SelectedPropertiesType'
+import { ContactField, ContactTemplate } from '@/pages/types/ContactTemplate'
+import { Field } from 'react-hook-form'
 
 type PropertyTableType = {
-  propertyName: string
-  id: number
-  headers: Array<CsvHeaderType>
+  header: CsvHeader
   onSelect: (propertyId: number, headerId: number) => void
+  fields: ContactField[]
 }
 
-function PropertyTable({
-  headers,
-  propertyName,
-  id,
-  onSelect,
-}: PropertyTableType) {
+function PropertyTable({ header, onSelect, fields }: PropertyTableType) {
   function changeHandler(e: ChangeEvent<HTMLSelectElement>) {
-    const headerId = e.target.options[e.target.selectedIndex].value
-    onSelect(id, Number(headerId))
+    const selectedId = e.target.options[e.target.selectedIndex].value
+    onSelect(Number(selectedId), header.id)
   }
 
   return (
-    <div className="w-48 rounded rounded-lg bg-orange-200 text-2xl font-bold">
-      <div className="bg-primary">{propertyName}</div>
+    <div className="w-68 rounded rounded-lg bg-orange-200 text-2xl font-bold shadow-2xl">
+      <div className="bg-primary">{header.property}</div>
       <div className="p-2">
         <select onChange={changeHandler} className="rounded rounded-lg px-2">
-          <option selected={true} disabled={true}>
-            Auswählen
-          </option>
-          {headers.map((head, index) => {
+          <option selected={true}>Nicht importieren</option>
+          {fields.map((field, index) => {
             return (
               <option
                 key={index}
-                value={index}
-                disabled={head.selected !== false && head.selected !== id}
+                value={field.id}
+                disabled={
+                  field.selected !== false && field.selected !== header.id
+                }
               >
-                {head.property}
+                {field.displayName}
               </option>
             )
           })}

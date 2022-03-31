@@ -2,73 +2,69 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import { Data } from '@/pages/api/hello'
 import Welcome from '@/components/welcome'
-import { CsvHeaderType, FileContentType } from '@/pages/types/FileContentType'
+import { FileContent } from '@/pages/types/FileContentType'
 import { useEffect, useState } from 'react'
-import { set } from 'react-hook-form'
-import Configuration from '@/components/configuration'
-import { SelectedPropertiesType } from '@/pages/types/SelectedPropertiesType'
 import PropertyAssignment from '@/components/propertyassignment'
-import Tablepreview from '@/components/tablepreview'
-import HeadComponent from '@/components/HeadComponent'
+import TablePreview from '@/components/tablepreview'
+import TemplateSelector from '@/components/templateSelector'
+import { ContactTemplate } from '@/pages/types/ContactTemplate'
 
 const Home: NextPage<Data> = ({ name }) => {
-  const loadFileContent = (): FileContentType | null => {
+  const loadFileContent = (): FileContent | null => {
     const storageString = window.sessionStorage.getItem('filecontent')
     return storageString ? JSON.parse(storageString) : null
   }
-  const loadSelectedProperties = (): SelectedPropertiesType | null => {
-    const storageString = window.sessionStorage.getItem('selected-props')
-    return storageString ? JSON.parse(storageString) : null
-  }
-  const loadHeaders = (): CsvHeaderType[] | null => {
-    const storageString = window.sessionStorage.getItem('headers')
+  const loadContactTemplate = (): ContactTemplate | null => {
+    const storageString = window.sessionStorage.getItem('contactTemplate')
     return storageString ? JSON.parse(storageString) : null
   }
   const deleteFileContent = (): void => {
     setFileContent(null)
   }
-  const deleteSelectedProperties = (): void => {
-    setSelectedProperties(null)
+  const deleteContactTemplate = (): void => {
+    setContactTemplate(null)
   }
-  const deleteFileHeaders = (): void => {
-    setFileHeaders(null)
-    let headers: CsvHeaderType[] = []
-    fileContent!.header.forEach((header) => {
-      let newHeader = header
-      newHeader.selected = false
-      headers.push(newHeader)
+  const deleteAssignedProperties = (): void => {
+    setFileContent((current) => {
+      if (current === null) return null
+      current.columns.forEach((header) => {
+        header.header.selectedProperty = false
+      })
+      return current
     })
-    let newFileContent = fileContent
-    newFileContent!.header = headers
-    setFileContent(newFileContent)
-    console.log(fileContent)
+    setContactTemplate((current) => {
+      if (current === null) return null
+      current.fields.forEach((field) => {
+        field.selected = false
+      })
+      return current
+    })
+    setPropsSet(false)
   }
 
-  const [fileContent, setFileContent] = useState<FileContentType | null>(null)
-  const [selectedProperties, setSelectedProperties] =
-    useState<SelectedPropertiesType | null>(null)
-  const [fileHeaders, setFileHeaders] = useState<CsvHeaderType[] | null>(null)
+  const [fileContent, setFileContent] = useState<FileContent | null>(null)
+  const [isPropsSet, setPropsSet] = useState<boolean>(false)
+  const [contactTemplate, setContactTemplate] =
+    useState<ContactTemplate | null>(null)
 
   useEffect(() => {
     setFileContent(loadFileContent)
-    setSelectedProperties(loadSelectedProperties)
-    setFileHeaders(loadHeaders)
+    setContactTemplate(loadContactTemplate)
   }, [])
 
   useEffect(() => {
     sessionStorage.setItem('filecontent', JSON.stringify(fileContent))
+    console.log(fileContent)
   }, [fileContent])
   useEffect(() => {
-    sessionStorage.setItem('selected-props', JSON.stringify(selectedProperties))
-  }, [selectedProperties])
-  useEffect(() => {
-    sessionStorage.setItem('headers', JSON.stringify(fileHeaders))
-  }, [fileHeaders])
+    sessionStorage.setItem('contactTemplate', JSON.stringify(contactTemplate))
+  }, [contactTemplate])
 
   function returnToStartingPage() {
-    deleteFileHeaders()
+    if (fileContent === null) return
     deleteFileContent()
-    deleteSelectedProperties()
+    deleteContactTemplate()
+    setPropsSet(false)
   }
 
   return (
@@ -76,9 +72,9 @@ const Home: NextPage<Data> = ({ name }) => {
       <Head>
         <title>Nexave Importer</title>
       </Head>
-      <div className="my-2 flex justify-center">
+      <div className="mb-2 flex justify-center">
         <button
-          className="text-blue-700 underline"
+          className="my-1 text-blue-700 underline"
           onClick={returnToStartingPage}
         >
           Zurück zur Startseite
@@ -87,24 +83,25 @@ const Home: NextPage<Data> = ({ name }) => {
 
       {fileContent === null ? (
         <Welcome setFileContent={setFileContent} />
-      ) : selectedProperties === null ? (
-        <Configuration
+      ) : contactTemplate === null ? (
+        <TemplateSelector
+          setContactTemplate={setContactTemplate}
           deleteFileContent={deleteFileContent}
-          setSelectedProperties={setSelectedProperties}
         />
-      ) : fileHeaders === null ? (
+      ) : !isPropsSet ? (
         <PropertyAssignment
+          setContactTemplate={setContactTemplate}
+          setFileContent={setFileContent}
+          deleteContactTemplate={deleteContactTemplate}
+          contactTemplate={contactTemplate}
           fileContent={fileContent}
-          setFileHeaders={setFileHeaders}
-          deleteSelectedProperties={deleteSelectedProperties}
-          selectedProperties={selectedProperties}
+          setPropsSet={setPropsSet}
         />
       ) : (
-        <Tablepreview
-          deleteFileHeaders={deleteFileHeaders}
-          fileHeaders={fileHeaders}
-          selectedProperties={selectedProperties}
+        <TablePreview
+          contactTemplate={contactTemplate}
           fileContent={fileContent}
+          setPropsSet={deleteAssignedProperties}
         />
       )}
     </div>

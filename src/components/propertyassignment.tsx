@@ -1,12 +1,7 @@
 import PropertyTable from '@/components/PropertyTable'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import {
-  CsvColumn,
-  CsvHeader,
-  FileContent,
-} from '@/pages/types/FileContentType'
-import { SelectablePropertyType } from '@/pages/types/SelectedPropertiesType'
-import { ContactField, ContactTemplate } from '@/pages/types/ContactTemplate'
+import { Dispatch, SetStateAction, useState } from 'react'
+import { CsvColumn, FileContent } from '@/types/FileContentType'
+import { ContactField, ContactTemplate } from '@/types/ContactTemplate'
 
 type AssignmentProps = {
   fileContent: FileContent

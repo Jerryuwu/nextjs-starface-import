@@ -1,11 +1,11 @@
-import { FileContent } from '@/pages/types/FileContentType'
-import { SelectedPropertiesType } from '@/pages/types/SelectedPropertiesType'
+import { FileContent } from '@/types/FileContentType'
+import { SelectedPropertiesType } from '@/types/SelectedPropertiesType'
 import { Dispatch, SetStateAction, useEffect } from 'react'
-import { ContactTemplate } from '@/pages/types/ContactTemplate'
+import { ContactTemplate } from '@/types/ContactTemplate'
 
 type TablePreviewProps = {
   fileContent: FileContent
-  setPropsSet: Dispatch<SetStateAction<boolean>>
+  setPropsSet: Dispatch<SetStateAction<void>>
   contactTemplate: ContactTemplate
 }
 type TableContent = {
@@ -27,13 +27,13 @@ const TablePreview = ({
     orderFileContent()
   })
   function deletePropertyAssignments() {
-    setPropsSet(false)
+    setPropsSet()
   }
   function downloadCSV(csv: string) {
     var csvFile
     var downloadLink
-
-    csvFile = new Blob([csv], { type: 'text/csv' })
+    let BOM = '\uFEFF'
+    csvFile = new Blob([BOM + csv], { type: 'text/csv; charset=utf-8' })
     downloadLink = document.createElement('a')
     downloadLink.download = 'starface_kundendaten'
     downloadLink.href = window.URL.createObjectURL(csvFile)
@@ -50,13 +50,11 @@ const TablePreview = ({
     newFields = contactTemplate.fields.sort((a, b) => a.selected - b.selected)
     newFields.forEach((field) => {
       if (field.selected === false) return
-      console.log(field.selected)
       exportString += field.name + ';'
     })
     exportString += '\n'
     for (let i = 0; i < fileContent.columns[0].rows.length; i++) {
       fileContent.columns.forEach((col, index) => {
-        console.log(col)
         if (col.header.selectedProperty === undefined) return
         exportString += col.rows[i] + ';'
       })
@@ -113,7 +111,7 @@ const TablePreview = ({
                 {col.rows.map((row) => {
                   return (
                     <td className="border-b-[1px] px-2 py-1 text-left">
-                      {row}
+                      {row === '' ? ' ' : row}
                     </td>
                   )
                 })}

@@ -2,12 +2,12 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import { Data } from '@/pages/api/hello'
 import Welcome from '@/components/welcome'
-import { FileContent } from '@/pages/types/FileContentType'
+import { FileContent } from '@/types/FileContentType'
 import { useEffect, useState } from 'react'
 import PropertyAssignment from '@/components/propertyassignment'
 import TablePreview from '@/components/tablepreview'
 import TemplateSelector from '@/components/templateSelector'
-import { ContactTemplate } from '@/pages/types/ContactTemplate'
+import { ContactTemplate } from '@/types/ContactTemplate'
 
 const Home: NextPage<Data> = ({ name }) => {
   const loadFileContent = (): FileContent | null => {

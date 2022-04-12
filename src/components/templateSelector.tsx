@@ -1,4 +1,4 @@
-import { ContactTemplate, ContactField } from '@/pages/types/ContactTemplate'
+import { ContactTemplate, ContactField } from '@/types/ContactTemplate'
 import { Dispatch, SetStateAction } from 'react'
 import { Link } from 'react-router-dom'
 

@@ -1,10 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { Dispatch, SetStateAction } from 'react'
-import {
-  CsvColumn,
-  CsvHeader,
-  FileContent,
-} from '@/pages/types/FileContentType'
+import { CsvColumn, CsvHeader, FileContent } from '@/types/FileContentType'
 import Link from 'next/link'
 import Head from 'next/head'
 
@@ -81,14 +77,14 @@ function Welcome({ setFileContent }: WelcomeProps) {
         <p className="info-text mb-4">
           Dieses Tool ermöglicht Ihnen, Kundendaten aus anderen Programmen in
           die Starface-Anlage zu importieren. <br />
-          Für den Import werden zwei CSV-Dateien benötigt:
+          Für den Import werden zwei Dateien benötigt:
           <br />
           1. Ihre <strong>Kundendaten</strong>, formatiert als CSV <br />
-          2. Die <strong> Importdatei aus Starface</strong>, ebenfalls als CSV{' '}
+          2. Die <strong> Importdatei aus Starface</strong>
           <br />
           Zunächst beginnen Sie damit, die Kundendaten hochzuladen. Sie werden
-          dann automatisch weitergeleitet, <br /> um die Importdatei aus
-          Starface hochzuladen. Genaueres dazu ist dort zu finden.
+          dann automatisch weitergeleitet, um die Importdatei aus Starface
+          hochzuladen. <br /> Genaueres dazu ist dort zu finden.
         </p>
         <p className="mt-2 text-3xl font-bold ">
           Laden Sie hier Ihre Kundendaten hoch:

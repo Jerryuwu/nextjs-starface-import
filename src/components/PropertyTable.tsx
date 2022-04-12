@@ -1,11 +1,11 @@
-import { CsvHeader } from '@/pages/types/FileContentType'
+import { CsvHeader } from '@/types/FileContentType'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { func } from 'prop-types'
 import {
   SelectablePropertyType,
   SelectedPropertiesType,
-} from '@/pages/types/SelectedPropertiesType'
-import { ContactField, ContactTemplate } from '@/pages/types/ContactTemplate'
+} from '@/types/SelectedPropertiesType'
+import { ContactField, ContactTemplate } from '@/types/ContactTemplate'
 import { Field } from 'react-hook-form'
 
 type PropertyTableType = {

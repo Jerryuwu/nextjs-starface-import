@@ -1,4 +1,4 @@
-import { ContactField } from '@/pages/types/ContactTemplate'
+import { ContactField } from '@/types/ContactTemplate'
 
 export type FileContent = {
   columns: CsvColumn[]

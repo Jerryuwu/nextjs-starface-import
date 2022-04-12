@@ -27,7 +27,11 @@
 }
 
 table {
-    display: table
+    display: table;
+    empty-cells: show;
+}
+td {
+    white-space: pre-wrap;
 }
 
 tbody tr {

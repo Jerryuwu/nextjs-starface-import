@@ -54,7 +54,6 @@ const Home: NextPage<Data> = ({ name }) => {
 
   useEffect(() => {
     sessionStorage.setItem('filecontent', JSON.stringify(fileContent))
-    console.log(fileContent)
   }, [fileContent])
   useEffect(() => {
     sessionStorage.setItem('contactTemplate', JSON.stringify(contactTemplate))
